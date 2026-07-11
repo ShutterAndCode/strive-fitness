@@ -15,6 +15,8 @@ import Slider from "../components/ui/Slider";
 import toast, { Toaster } from "react-hot-toast";
 import mockApi from "../services/mockAPI";
 import { ageRanges, goalOptions } from "../assets/assets";
+import ThemeToggle from "../components/ThemeToggle";
+
 const Onboarding = () => {
   const [step, setStep] = useState(2);
   const totalSteps = 3;
@@ -89,6 +91,9 @@ const Onboarding = () => {
     <>
       <Toaster position="top-right" reverseOrder={false} />
       <main className="min-h-screen bg-slate-50 p-6 dark:bg-slate-900">
+        <div className="mb-4 flex justify-end">
+          <ThemeToggle className="bg-white/80 text-slate-700 shadow-sm backdrop-blur dark:bg-slate-800/80 dark:text-slate-200" />
+        </div>
         <div className="mx-auto flex max-w-3xl flex-col gap-6 rounded-2xl bg-white p-8 shadow-sm dark:bg-slate-800">
           <div className="flex items-center gap-3">
             <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-emerald-500">

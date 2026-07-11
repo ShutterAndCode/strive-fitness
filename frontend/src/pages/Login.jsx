@@ -5,6 +5,8 @@ import { useAppContext } from "../context/useAppContext";
 import { useEffect } from "react";
 import { useState } from "react";
 import { Toaster } from "react-hot-toast";
+import ThemeToggle from "../components/ThemeToggle";
+
 const Login = () => {
   const [loginState, setLoginState] = useState("login");
   const [username, setUsername] = useState("");
@@ -34,7 +36,10 @@ const Login = () => {
   return (
     <>
     <Toaster></Toaster>
-      <main className="login-page-container">
+      <main className="login-page-container relative">
+        <div className="absolute right-4 top-4">
+          <ThemeToggle className="bg-white/80 text-slate-700 shadow-sm backdrop-blur dark:bg-slate-900/80 dark:text-slate-200" />
+        </div>
         <form className="login-form" onSubmit={handleSubmit}>
           <h2 className="text-3xl font-medium text-gray-900 dark:text-white">
             {loginState === "login" ? "Sign In" : "Sign Up"}

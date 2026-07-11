@@ -9,9 +9,12 @@
 *{
    font-family: 'Google Sans', sans-serif;
 }
-body{
-    @apply dark:bg-slate-950  text-white
-   
+body {
+  @apply min-h-screen bg-slate-50 text-slate-900 transition-colors duration-200 dark:bg-slate-950 dark:text-white;
+}
+
+#root {
+  @apply min-h-screen;
 }
 
 /* Shared Page Styles */

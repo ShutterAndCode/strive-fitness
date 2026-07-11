@@ -1,11 +1,16 @@
-
-import { Outlet } from 'react-router-dom'
+import { Outlet } from "react-router-dom";
+import Sidebar from "../components/Sidebar";
+import BottomNav from "../components/ui/BottomNav";
 const Layout = () => {
   return (
-    <div>
+    <div className="layout-container">
+      <Sidebar />
+      <div className="flex-1 overflow-y-scroll">
         <Outlet></Outlet>
+      </div>
+      <BottomNav/>
     </div>
-  )
-}
+  );
+};
 
-export default Layout
+export default Layout;

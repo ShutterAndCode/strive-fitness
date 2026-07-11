@@ -1,9 +1,173 @@
-import React from 'react'
+import { EyeIcon, EyeOffIcon, LucideMail, UserIcon } from "lucide-react";
 
+import { useNavigate } from "react-router-dom";
+import { useAppContext } from "../context/useAppContext";
+import { useEffect } from "react";
+import { useState } from "react";
+import { Toaster } from "react-hot-toast";
 const Login = () => {
-  return (
-    <div className='text-white'>Login hello</div>
-  )
-}
+  const [loginState, setLoginState] = useState("login");
+  const [username, setUsername] = useState("");
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [showPassword, setShowPassword] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
-export default Login
+  const navigate = useNavigate();
+  const { login, signup, user } = useAppContext();
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    setIsSubmitting(true);
+    if (loginState == "login") {
+      await login({ email, password });
+    } else {
+      await signup({ username, email, password });
+    }
+    setIsSubmitting(false);
+  };
+
+  useEffect(() => {
+    if (user) {
+      navigate("/");
+    }
+  }, [user, navigate]);
+  return (
+    <>
+    <Toaster></Toaster>
+      <main className="login-page-container">
+        <form className="login-form" onSubmit={handleSubmit}>
+          <h2 className="text-3xl font-medium text-gray-900 dark:text-white">
+            {loginState === "login" ? "Sign In" : "Sign Up"}
+          </h2>
+          <p className="text-sm mt-2 text-gray-600/90 dark:text-gray-400">
+            {loginState === "login"
+              ? "Please enter your details to Login"
+              : "Please create an Account"}
+          </p>
+          {/* userName */}
+          {loginState !== "login" && (
+            <div className="mt-4">
+              <label
+                htmlFor="userName"
+                className="font-medium text-sm text-gray-700 dark:text-gray-300"
+              >
+                Username
+              </label>
+              <div className="relative mt-2">
+                <UserIcon className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600" />
+                <input
+                  onChange={(e) => {
+                    setUsername(e.target.value);
+                  }}
+                  value={username}
+                  type="text"
+                  name="userName"
+                  id="userName"
+                  placeholder="Enter Username"
+                  className="login-input"
+                  required
+                />
+              </div>
+            </div>
+          )}
+          {/* email */}
+          <div className="mt-4">
+            <label
+              htmlFor="email"
+              className="font-medium text-sm text-gray-700 dark:text-gray-300"
+            >
+              Email
+            </label>
+            <div className="relative mt-2">
+              <LucideMail className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600" />
+              <input
+                onChange={(e) => {
+                  setEmail(e.target.value);
+                }}
+                value={email}
+                type="email"
+                name="email"
+                id="email"
+                placeholder="Please enter your email"
+                className="login-input"
+                required
+              />
+            </div>
+          </div>
+          {/* password */}
+          <div className="mt-4">
+            <label
+              htmlFor="password"
+              className="font-medium text-sm text-gray-700 dark:text-gray-300"
+            >
+              Password
+            </label>
+            <div className="relative mt-2">
+              <input
+                onChange={(e) => setPassword(e.target.value)}
+                value={password}
+                type={showPassword ? "text" : "password"}
+                name="password"
+                id="password"
+                placeholder="Enter your password"
+                className="login-input pr-10"
+                required
+              />
+
+              <button
+                type="button"
+                onClick={() => setShowPassword((p) => !p)}
+                className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600"
+              >
+                {showPassword ? (
+                  <EyeOffIcon size={16} />
+                ) : (
+                  <EyeIcon size={16} />
+                )}
+              </button>
+            </div>
+          </div>
+          <button
+            type="submit"
+            disabled={isSubmitting}
+            className="login-button"
+          >
+            {isSubmitting
+              ? "Signing In..."
+              : loginState === "login"
+                ? "Login"
+                : "Sign up"}
+          </button>
+
+          {loginState === "login" ? (
+            <p className="text-center py-6 text-sm text-gray-500">
+              Don't have an Account?
+              <button
+                onClick={() => {
+                  setLoginState("sign-up");
+                }}
+                className="ml-1 cursor-pointer text-white hover:underline"
+              >
+                Sign Up
+              </button>
+            </p>
+          ) : (
+            <p className="text-center py-6 text-sm text-gray-500">
+              Already have an account?
+              <button
+                onClick={() => {
+                  setLoginState("login");
+                }}
+                className="ml-1 cursor-pointer text-white hover:underline"
+              >
+                Log in
+              </button>
+            </p>
+          )}
+        </form>
+      </main>
+    </>
+  );
+};
+
+export default Login;

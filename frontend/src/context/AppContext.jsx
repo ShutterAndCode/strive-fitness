@@ -1,72 +1,71 @@
-import { createContext, useContext, useEffect, useState } from "react";
+import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import mockApi from "../services/mockAPI";
+import AppContext from "./appContext";
 
-const AppContext = createContext();
+const hasRequiredProfile = (profile) =>
+  profile?.age != null && profile?.weight != null && Boolean(profile?.goal);
+
+const shouldRequireOnboarding = (profile) => {
+  if (!profile) {
+    return true;
+  }
+
+  return !hasRequiredProfile(profile);
+};
 
 export const AppProvider = ({ children }) => {
   const navigate = useNavigate();
   const [user, setUser] = useState(null);
-  const [isUserFetched, setIsUserFetched] = useState(false);
-  const [isonboardingCompleted, setIsOnboardingCompleted] = useState(false);
+  const [isUserFetched, setIsUserFetched] = useState(true);
+  const [isOnboardingCompleted, setIsOnboardingCompleted] = useState(false);
   const [allFoodLogs, setAllFoodLogs] = useState([]);
-  const [allAcitivityLogs, setAllAcitivityLogs] = useState([]);
+  const [allActivityLogs, setAllActivityLogs] = useState([]);
 
-  const signup = async (crendentials) => {
-    const { data } = await mockApi.auth.register(crendentials);
+  const signup = async (credentials) => {
+    const { data } = await mockApi.auth.register(credentials);
     setUser(data.user);
-    if (data?.user?.age && data?.user?.weight && data?.user?.goal) {
-      setIsOnboardingCompleted(true);
-    }
+    setIsOnboardingCompleted(false);
+    setIsUserFetched(true);
     localStorage.setItem("token", data.jwt);
   };
 
-  const login = async (crendentials) => {
+  const login = async (credentials) => {
     const { data } = await mockApi.auth.login(credentials);
-    setUser({ ...data.user, token: data.jwt });
-    if (data?.user?.age && data?.user?.weight && data?.user?.goal) {
-      setIsOnboardingCompleted(true);
-    }
+    const nextUser = { ...data.user, token: data.jwt };
+
+    setUser(nextUser);
+    setIsOnboardingCompleted(!shouldRequireOnboarding(nextUser));
+    setIsUserFetched(true);
     localStorage.setItem("token", data.jwt);
   };
 
   const fetchUser = async (token) => {
-    const { data } = mockApi.user.me();
-    setUser({ ...data, token });
-    if (data?.age && data?.weight && data?.goal) {
-      setIsOnboardingCompleted(true);
-    }
+    const { data } = await mockApi.user.me();
+    const nextUser = { ...data, token };
+
+    setUser(nextUser);
+    setIsOnboardingCompleted(!shouldRequireOnboarding(nextUser));
     setIsUserFetched(true);
   };
+
   const fetchFoodLogs = async () => {
-    const { data } = mockApi.foodLogs.list();
+    const { data } = await mockApi.foodLogs.list();
     setAllFoodLogs(data);
   };
 
   const fetchActivityLogs = async () => {
     const { data } = await mockApi.activityLogs.list();
-    setAllAcitivityLogs(data);
+    setAllActivityLogs(data);
   };
 
-  const logout = async (params) => {
+  const logout = async () => {
     localStorage.removeItem("token");
     setUser(null);
     setIsOnboardingCompleted(false);
+    setIsUserFetched(true);
     navigate("/");
   };
-
-  useEffect(() => {
-    const token = localStorage.getItem("token");
-    if (token) {
-      (async () => {
-        await fetchUser(token);
-        await fetchFoodLogs();
-        await fetchActivityLogs();
-      })();
-    } else {
-      setIsUserFetched(true);
-    }
-  }, []);
 
   const value = {
     user,
@@ -76,15 +75,13 @@ export const AppProvider = ({ children }) => {
     signup,
     login,
     logout,
-    isonboardingCompleted,
+    isOnboardingCompleted,
     setIsOnboardingCompleted,
     allFoodLogs,
-    allAcitivityLogs,
-    setAllAcitivityLogs,
+    allActivityLogs,
+    setAllActivityLogs,
     setAllFoodLogs,
   };
 
   return <AppContext.Provider value={value}>{children}</AppContext.Provider>;
 };
-
-export const useAppContext = () => useContext(AppContext);

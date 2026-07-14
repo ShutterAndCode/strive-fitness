@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import mockApi from "../services/mockAPI";
 import AppContext from "./appContext";
@@ -22,11 +22,58 @@ export const AppProvider = ({ children }) => {
   const [allFoodLogs, setAllFoodLogs] = useState([]);
   const [allActivityLogs, setAllActivityLogs] = useState([]);
 
+  useEffect(() => {
+    const restoreSession = async () => {
+      const token = localStorage.getItem("token");
+
+      if (!token) {
+        try {
+          const savedDb = localStorage.getItem("fitness_db");
+
+          if (savedDb) {
+            const parsedDb = JSON.parse(savedDb);
+            setAllFoodLogs(parsedDb.foodLogs || []);
+            setAllActivityLogs(parsedDb.activityLogs || []);
+          }
+        } catch (error) {
+          console.error("Failed to restore persisted logs", error);
+        }
+
+        return;
+      }
+
+      try {
+        const { data } = await mockApi.user.me();
+        const nextUser = { ...data, token };
+
+        setUser(nextUser);
+        setIsOnboardingCompleted(!shouldRequireOnboarding(nextUser));
+        setIsUserFetched(true);
+
+        const [{ data: foodData }, { data: activityData }] = await Promise.all([
+          mockApi.foodLogs.list(),
+          mockApi.activityLogs.list(),
+        ]);
+
+        setAllFoodLogs(foodData || []);
+        setAllActivityLogs(activityData || []);
+      } catch (error) {
+        console.error("Failed to restore session", error);
+      }
+    };
+
+    restoreSession();
+  }, []);
+
   const signup = async (credentials) => {
     const { data } = await mockApi.auth.register(credentials);
-    setUser(data.user);
+    const nextUser = data.user;
+
+    setUser(nextUser);
     setIsOnboardingCompleted(false);
     setIsUserFetched(true);
+    setAllFoodLogs([]);
+    setAllActivityLogs([]);
     localStorage.setItem("token", data.jwt);
   };
 
@@ -38,6 +85,14 @@ export const AppProvider = ({ children }) => {
     setIsOnboardingCompleted(!shouldRequireOnboarding(nextUser));
     setIsUserFetched(true);
     localStorage.setItem("token", data.jwt);
+
+    const [{ data: foodData }, { data: activityData }] = await Promise.all([
+      mockApi.foodLogs.list(),
+      mockApi.activityLogs.list(),
+    ]);
+
+    setAllFoodLogs(foodData || []);
+    setAllActivityLogs(activityData || []);
   };
 
   const fetchUser = async (token) => {
@@ -47,6 +102,14 @@ export const AppProvider = ({ children }) => {
     setUser(nextUser);
     setIsOnboardingCompleted(!shouldRequireOnboarding(nextUser));
     setIsUserFetched(true);
+
+    const [{ data: foodData }, { data: activityData }] = await Promise.all([
+      mockApi.foodLogs.list(),
+      mockApi.activityLogs.list(),
+    ]);
+
+    setAllFoodLogs(foodData || []);
+    setAllActivityLogs(activityData || []);
   };
 
   const fetchFoodLogs = async () => {

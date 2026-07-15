@@ -153,6 +153,26 @@ const mockApi = {
       };
     },
 
+    update: async (documentId, updates) => {
+      await delay(300);
+
+      const db = getDB();
+
+      db.foodLogs = db.foodLogs.map((food) =>
+        food.documentId === documentId ? { ...food, ...updates } : food,
+      );
+
+      saveDB(db);
+
+      const updatedEntry = db.foodLogs.find(
+        (food) => food.documentId === documentId,
+      );
+
+      return {
+        data: updatedEntry,
+      };
+    },
+
     delete: async (documentId) => {
       await delay(300);
 
@@ -204,6 +224,31 @@ const mockApi = {
 
       return {
         data: newEntry,
+      };
+    },
+
+    update: async (documentId, updates) => {
+      await delay(300);
+
+      const db = getDB();
+      let updatedEntry = null;
+
+      db.activityLogs = db.activityLogs.map((entry) => {
+        if (entry.documentId === documentId) {
+          updatedEntry = {
+            ...entry,
+            ...updates,
+            updatedAt: new Date().toISOString(),
+          };
+          return updatedEntry;
+        }
+        return entry;
+      });
+
+      saveDB(db);
+
+      return {
+        data: updatedEntry,
       };
     },
 

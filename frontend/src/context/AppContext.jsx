@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import mockApi from "../services/mockAPI";
 import AppContext from "./appContext";
+import toast from "react-hot-toast";
 
 const hasRequiredProfile = (profile) =>
   profile?.age != null && profile?.weight != null && Boolean(profile?.goal);
@@ -123,12 +124,25 @@ export const AppProvider = ({ children }) => {
   };
 
   const logout = async () => {
+  try {
+    const confirm = window.confirm(
+      "Are you sure you want to log out?"
+    );
+
+    if (!confirm) return;
+
     localStorage.removeItem("token");
     setUser(null);
     setIsOnboardingCompleted(false);
     setIsUserFetched(true);
+
     navigate("/");
-  };
+    toast.success("Logged out successfully");
+  } catch (error) {
+    console.error(error);
+    toast.error("Failed to log out");
+  }
+};
 
   const value = {
     user,

@@ -18,7 +18,7 @@ const shouldRequireOnboarding = (profile) => {
 export const AppProvider = ({ children }) => {
   const navigate = useNavigate();
   const [user, setUser] = useState(null);
-  const [isUserFetched, setIsUserFetched] = useState(true);
+  const [isUserFetched, setIsUserFetched] = useState(false);
   const [isOnboardingCompleted, setIsOnboardingCompleted] = useState(false);
   const [allFoodLogs, setAllFoodLogs] = useState([]);
   const [allActivityLogs, setAllActivityLogs] = useState([]);
@@ -39,9 +39,11 @@ export const AppProvider = ({ children }) => {
         } catch (error) {
           console.error("Failed to restore persisted logs", error);
         }
-
+        setIsUserFetched(true);
         return;
       }
+
+      setIsUserFetched(false);
 
       try {
         const { data } = await mockApi.user.me();
@@ -60,11 +62,28 @@ export const AppProvider = ({ children }) => {
         setAllActivityLogs(activityData || []);
       } catch (error) {
         console.error("Failed to restore session", error);
+        localStorage.removeItem("token");
+        setUser(null);
+        setIsOnboardingCompleted(false);
+        setIsUserFetched(true);
       }
     };
 
     restoreSession();
   }, []);
+  useEffect(() => {
+    const handleUnauthorized = () => {
+      setUser(null);
+      setIsOnboardingCompleted(false);
+      setIsUserFetched(true);
+      navigate("/");
+    };
+
+    window.addEventListener("auth:unauthorized", handleUnauthorized);
+
+    return () =>
+      window.removeEventListener("auth:unauthorized", handleUnauthorized);
+  }, [navigate]);
 
   const signup = async (credentials) => {
     const { data } = await mockApi.auth.register(credentials);
@@ -124,25 +143,23 @@ export const AppProvider = ({ children }) => {
   };
 
   const logout = async () => {
-  try {
-    const confirm = window.confirm(
-      "Are you sure you want to log out?"
-    );
+    try {
+      const confirm = window.confirm("Are you sure you want to log out?");
 
-    if (!confirm) return;
+      if (!confirm) return;
 
-    localStorage.removeItem("token");
-    setUser(null);
-    setIsOnboardingCompleted(false);
-    setIsUserFetched(true);
+      localStorage.removeItem("token");
+      setUser(null);
+      setIsOnboardingCompleted(false);
+      setIsUserFetched(true);
 
-    navigate("/");
-    toast.success("Logged out successfully");
-  } catch (error) {
-    console.error(error);
-    toast.error("Failed to log out");
-  }
-};
+      navigate("/");
+      toast.success("Logged out successfully");
+    } catch (error) {
+      console.error(error);
+      toast.error("Failed to log out");
+    }
+  };
 
   const value = {
     user,

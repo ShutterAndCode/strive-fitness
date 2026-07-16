@@ -1,8 +1,4 @@
-import {
-  dummyUser,
-  dummyFoodLogs,
-  dummyActivityLogs,
-} from "../assets/assets";
+import { dummyUser, dummyFoodLogs, dummyActivityLogs } from "../assets/assets";
 
 const getDB = () => {
   const dbStr = localStorage.getItem("fitness_db");
@@ -24,8 +20,7 @@ const saveDB = (db) => {
   localStorage.setItem("fitness_db", JSON.stringify(db));
 };
 
-const delay = (ms) =>
-  new Promise((resolve) => setTimeout(resolve, ms));
+const delay = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
 
 const mockApi = {
   auth: {
@@ -137,9 +132,9 @@ const mockApi = {
       const newEntry = {
         id: Date.now(),
         documentId: "doc_food_" + Date.now(),
-        name: payload.data.name,
-        calories: payload.data.calories,
-        mealType: payload.data.mealType,
+        name: payload.name,
+        calories: payload.calories,
+        mealType: payload.mealType,
         date: new Date().toISOString().split("T")[0],
         createdAt: new Date().toISOString(),
       };
@@ -179,7 +174,7 @@ const mockApi = {
       const db = getDB();
 
       db.foodLogs = db.foodLogs.filter(
-        (food) => food.documentId !== documentId
+        (food) => food.documentId !== documentId,
       );
 
       saveDB(db);
@@ -211,9 +206,9 @@ const mockApi = {
       const newEntry = {
         id: Date.now(),
         documentId: "doc_act_" + Date.now(),
-        name: payload.data.name,
-        duration: payload.data.duration,
-        calories: payload.data.calories,
+        name: payload.name,
+        duration: payload.duration,
+        calories: payload.calories,
         date: new Date().toISOString().split("T")[0],
         createdAt: new Date().toISOString(),
       };
@@ -258,7 +253,7 @@ const mockApi = {
       const db = getDB();
 
       db.activityLogs = db.activityLogs.filter(
-        (activity) => activity.documentId !== documentId
+        (activity) => activity.documentId !== documentId,
       );
 
       saveDB(db);
@@ -282,8 +277,7 @@ const mockApi = {
         { name: "Pizza Slice", calories: 300 },
       ];
 
-      const randomFood =
-        foods[Math.floor(Math.random() * foods.length)];
+      const randomFood = foods[Math.floor(Math.random() * foods.length)];
 
       return {
         data: {

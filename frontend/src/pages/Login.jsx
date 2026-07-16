@@ -4,7 +4,7 @@ import { useNavigate } from "react-router-dom";
 import { useAppContext } from "../context/useAppContext";
 import { useEffect } from "react";
 import { useState } from "react";
-import { Toaster } from "react-hot-toast";
+import toast, { Toaster } from "react-hot-toast";
 import ThemeToggle from "../components/ThemeToggle";
 
 const Login = () => {
@@ -18,15 +18,26 @@ const Login = () => {
   const navigate = useNavigate();
   const { login, signup, user } = useAppContext();
   const handleSubmit = async (e) => {
-    e.preventDefault();
-    setIsSubmitting(true);
+  e.preventDefault();
+  setIsSubmitting(true);
+
+  try {
     if (loginState == "login") {
       await login({ email, password });
     } else {
       await signup({ username, email, password });
     }
+  } catch (error) {
+    toast.error(
+      error?.response?.data?.message ||
+        (loginState == "login"
+          ? "Login failed. Please check your credentials."
+          : "Sign up failed. Please try again."),
+    );
+  } finally {
     setIsSubmitting(false);
-  };
+  }
+};
 
   useEffect(() => {
     if (user) {

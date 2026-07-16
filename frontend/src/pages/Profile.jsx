@@ -1,11 +1,17 @@
 import { useState } from "react";
 import { useAppContext } from "../context/useAppContext";
-import { UserCircle2Icon, SparklesIcon, HeartPulseIcon, ArrowRightCircleIcon } from "lucide-react";
+import {
+  UserCircle2Icon,
+  SparklesIcon,
+  HeartPulseIcon,
+  ArrowRightCircleIcon,
+} from "lucide-react";
 import Card from "../components/ui/Card";
 import Input from "../components/ui/Input";
 import ThemeToggle from "../components/ThemeToggle";
 import mockApi from "../services/mockAPI";
-
+import Select from "../components/ui/Select";
+import { goalOptions } from "../assets/assets";
 const Profile = () => {
   const { user, logout, setUser, allFoodLogs, allActivityLogs } =
     useAppContext();
@@ -48,8 +54,12 @@ const Profile = () => {
       <div className="page-container">
         <div className="page-header flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
           <div>
-            <h1 className="text-2xl font-bold text-slate-800 dark:text-white">Profile</h1>
-            <p className="text-slate-500 text-sm mt-1 dark:text-slate-400">Manage your account</p>
+            <h1 className="text-2xl font-bold text-slate-800 dark:text-white">
+              Profile
+            </h1>
+            <p className="text-slate-500 text-sm mt-1 dark:text-slate-400">
+              Manage your account
+            </p>
           </div>
           <ThemeToggle />
         </div>
@@ -62,71 +72,100 @@ const Profile = () => {
                   <UserCircle2Icon className="h-8 w-8" />
                 </div>
                 <div>
-                  <h2 className="text-xl font-semibold text-slate-900 dark:text-white">Your profile</h2>
-                  <p className="text-sm text-slate-500 dark:text-slate-400">Member since {memberSince}</p>
+                  <h2 className="text-xl font-semibold text-slate-900 dark:text-white">
+                    Your profile
+                  </h2>
+                  <p className="text-sm text-slate-500 dark:text-slate-400">
+                    Member since {memberSince}
+                  </p>
                 </div>
               </div>
 
               <div className="grid gap-4 sm:grid-cols-2">
                 <Card className="rounded-3xl border border-slate-200/70 bg-white/70 backdrop-blur-xl p-4 shadow-sm dark:border-slate-800/70 dark:bg-slate-900/60">
-                  <p className="text-sm text-slate-500 dark:text-slate-400">Age</p>
+                  <p className="text-sm text-slate-500 dark:text-slate-400">
+                    Age
+                  </p>
                   {editing ? (
                     <Input
                       label=""
                       type="number"
                       min={0}
                       value={formData.age}
-                      onChange={(value) => setFormData({ ...formData, age: Number(value) })}
+                      onChange={(value) =>
+                        setFormData({ ...formData, age: Number(value) })
+                      }
                     />
                   ) : (
-                    <p className="mt-2 text-2xl font-semibold text-slate-900 dark:text-white">{formData.age}</p>
+                    <p className="mt-2 text-2xl font-semibold text-slate-900 dark:text-white">
+                      {formData.age}
+                    </p>
                   )}
                 </Card>
                 <Card className="rounded-3xl border border-slate-200/70 bg-white/70 backdrop-blur-xl p-4 shadow-sm dark:border-slate-800/70 dark:bg-slate-900/60">
-                  <p className="text-sm text-slate-500 dark:text-slate-400">Weight</p>
+                  <p className="text-sm text-slate-500 dark:text-slate-400">
+                    Weight
+                  </p>
                   {editing ? (
                     <Input
                       label=""
                       type="number"
                       min={0}
                       value={formData.weight}
-                      onChange={(value) => setFormData({ ...formData, weight: Number(value) })}
+                      onChange={(value) =>
+                        setFormData({ ...formData, weight: Number(value) })
+                      }
                     />
                   ) : (
-                    <p className="mt-2 text-2xl font-semibold text-slate-900 dark:text-white">{formData.weight} kg</p>
+                    <p className="mt-2 text-2xl font-semibold text-slate-900 dark:text-white">
+                      {formData.weight} kg
+                    </p>
                   )}
                 </Card>
                 <Card className="rounded-3xl border border-slate-200/70 bg-white/70 backdrop-blur-xl p-4 shadow-sm dark:border-slate-800/70 dark:bg-slate-900/60">
-                  <p className="text-sm text-slate-500 dark:text-slate-400">Height</p>
+                  <p className="text-sm text-slate-500 dark:text-slate-400">
+                    Height
+                  </p>
                   {editing ? (
                     <Input
                       label=""
                       type="number"
                       min={0}
                       value={formData.height}
-                      onChange={(value) => setFormData({ ...formData, height: Number(value) })}
+                      onChange={(value) =>
+                        setFormData({ ...formData, height: Number(value) })
+                      }
                     />
                   ) : (
-                    <p className="mt-2 text-2xl font-semibold text-slate-900 dark:text-white">{formData.height} cm</p>
+                    <p className="mt-2 text-2xl font-semibold text-slate-900 dark:text-white">
+                      {formData.height} cm
+                    </p>
                   )}
                 </Card>
                 <Card className="rounded-3xl border border-slate-200/70 bg-white/70 backdrop-blur-xl p-4 shadow-sm dark:border-slate-800/70 dark:bg-slate-900/60">
-                  <p className="text-sm text-slate-500 dark:text-slate-400">Goal</p>
+                  <p className="text-sm text-slate-500 dark:text-slate-400">
+                    Goal
+                  </p>
                   {editing ? (
-                    <Input
-                      label=""
-                      type="text"
+                    <Select
                       value={formData.goal}
-                      onChange={(value) => setFormData({ ...formData, goal: value.toString() })}
+                      onChange={(value) =>
+                        setFormData({ ...formData, goal: value })
+                      }
+                      options={goalOptions}
                     />
                   ) : (
-                    <p className="mt-2 text-2xl font-semibold text-slate-900 dark:text-white">{formData.goal}</p>
+                    <p className="mt-2 text-2xl font-semibold text-slate-900 dark:text-white">
+                      {formData.goal}
+                    </p>
                   )}
                 </Card>
               </div>
 
               {profileError && (
-                <p className="text-sm text-red-600 dark:text-red-400">{profileError}</p>
+                <p className="text-sm text-red-600 dark:text-red-400">
+                  {profileError}
+                </p>
               )}
 
               {editing ? (
@@ -178,8 +217,12 @@ const Profile = () => {
             <Card className="space-y-5 p-6">
               <div className="flex items-center justify-between">
                 <div>
-                  <h2 className="text-xl font-semibold text-slate-900 dark:text-white">Your stats</h2>
-                  <p className="text-sm text-slate-500 dark:text-slate-400">Overview of your daily progress</p>
+                  <h2 className="text-xl font-semibold text-slate-900 dark:text-white">
+                    Your stats
+                  </h2>
+                  <p className="text-sm text-slate-500 dark:text-slate-400">
+                    Overview of your daily progress
+                  </p>
                 </div>
                 <div className="rounded-full bg-slate-100 p-3 text-slate-700 dark:bg-slate-800 dark:text-slate-200">
                   <HeartPulseIcon className="h-5 w-5" />
@@ -188,12 +231,20 @@ const Profile = () => {
 
               <div className="grid gap-4 ">
                 <Card className="rounded-3xl border border-slate-200 bg-white p-4 shadow-sm dark:border-slate-800 dark:bg-emerald-400/20">
-                  <p className="text-sm text-green-500 dark:text-green-400">Food entries</p>
-                  <p className="mt-2 text-2xl font-semibold text-slate-900 dark:text-white">{allFoodLogs?.length || 0}</p>
+                  <p className="text-sm text-green-500 dark:text-green-400">
+                    Food entries
+                  </p>
+                  <p className="mt-2 text-2xl font-semibold text-slate-900 dark:text-white">
+                    {allFoodLogs?.length || 0}
+                  </p>
                 </Card>
                 <Card className="rounded-3xl border border-slate-200 bg-white p-4 shadow-sm dark:border-slate-800 dark:bg-blue-400/20">
-                  <p className="text-sm text-blue-500 dark:text-blue-400">Activities</p>
-                  <p className="mt-2 text-2xl font-semibold text-slate-900 dark:text-white">{allActivityLogs?.length || 0}</p>
+                  <p className="text-sm text-blue-500 dark:text-blue-400">
+                    Activities
+                  </p>
+                  <p className="mt-2 text-2xl font-semibold text-slate-900 dark:text-white">
+                    {allActivityLogs?.length || 0}
+                  </p>
                 </Card>
               </div>
 

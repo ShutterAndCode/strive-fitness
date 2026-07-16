@@ -91,9 +91,9 @@ export const goalOptions = [
 ];
 
 export const goalLabels = {
-  lose: "Lose Weight",
-  maintain: "Maintain Weight",
-  gain: "Gain Muscle",
+  Lose: "Lose Weight",
+  Maintain: "Maintain Weight",
+  Gain: "Gain Muscle",
 };
 
 export const ageRanges = [

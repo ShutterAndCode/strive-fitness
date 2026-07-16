@@ -15,7 +15,7 @@ import mockApi from "../services/mockAPI";
 import toast from "react-hot-toast";
 
 const FoodLog = () => {
-  const [loading] = useState(false);
+  const [loading, setLoading] = useState(false);
   const inputRef = useRef(null);
   const { allFoodLogs, setAllFoodLogs } = useAppContext();
   const [showForm, setShowForm] = useState(false);
@@ -26,7 +26,7 @@ const FoodLog = () => {
     mealType: "",
   });
   const [editingEntry, setEditingEntry] = useState(null);
-
+  const [error, setError] = useState("");
   const normalizeDate = (value) => {
     if (!value) return "";
     const stringValue = typeof value === "string" ? value : value.toISOString();
@@ -93,25 +93,33 @@ const FoodLog = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    setLoading(true);
+    setError("");
 
-    if (editingEntry) {
-      const { data } = await mockApi.foodLogs.update(editingEntry.documentId, {
-        ...editingEntry,
-        ...formData,
-      });
-      setAllFoodLogs((prev) =>
-        prev.map((entry) =>
-          entry.documentId === editingEntry.documentId ? data : entry,
-        ),
-      );
-    } else {
-      const { data } = await mockApi.foodLogs.create({ data: formData });
-      setAllFoodLogs((prev) => [...prev, data]);
+    try {
+      if (editingEntry) {
+        const { data } = await mockApi.foodLogs.update(
+          editingEntry.documentId,
+          formData,
+        );
+        setAllFoodLogs((prev) =>
+          prev.map((entry) =>
+            entry.documentId === editingEntry.documentId ? data : entry,
+          ),
+        );
+      } else {
+        const { data } = await mockApi.foodLogs.create(formData);
+        setAllFoodLogs((prev) => [...prev, data]);
+      }
+
+      setFormData({ name: "", calories: 0, mealType: "" });
+      setEditingEntry(null);
+      setShowForm(false);
+    } catch {
+      setError("Unable to save entry. Please try again.");
+    } finally {
+      setLoading(false);
     }
-
-    setFormData({ name: "", calories: 0, mealType: "" });
-    setEditingEntry(null);
-    setShowForm(false);
   };
   useEffect(() => {
     console.log("entries changed:", entries);
@@ -249,6 +257,11 @@ const FoodLog = () => {
                     setFormData({ ...formData, mealType: v.toString() });
                   }}
                 />
+                {error && (
+                  <p className="text-sm text-red-600 dark:text-red-400">
+                    {error}
+                  </p>
+                )}
                 <div className="flex gap-3 pt-2">
                   <Button
                     className="flex-1"
@@ -262,7 +275,11 @@ const FoodLog = () => {
                     Cancel
                   </Button>
                   <Button type="submit" className="flex-1">
-                    Add Entry
+                    {loading
+                      ? "Saving..."
+                      : editingEntry
+                        ? "Update Entry"
+                        : "Add Entry"}
                   </Button>
                 </div>
               </form>

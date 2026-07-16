@@ -85,7 +85,7 @@ const ActivityLog = () => {
       if (editingEntry) {
         const { data } = await mockApi.activityLogs.update(
           editingEntry.documentId,
-          { ...editingEntry, ...formData },
+          formData,
         );
         setAllActivityLogs((prev) =>
           prev.map((entry) =>
@@ -93,7 +93,7 @@ const ActivityLog = () => {
           ),
         );
       } else {
-        const { data } = await mockApi.activityLogs.create({ data: formData });
+        const { data } = await mockApi.activityLogs.create(formData);
         setAllActivityLogs((prev) => [...prev, data]);
       }
       setFormData({ name: "", duration: 30, calories: 0 });

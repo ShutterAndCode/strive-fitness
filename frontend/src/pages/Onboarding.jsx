@@ -18,7 +18,8 @@ import { ageRanges, goalOptions } from "../assets/assets";
 import ThemeToggle from "../components/ThemeToggle";
 
 const Onboarding = () => {
-  const [step, setStep] = useState(2);
+  const [step, setStep] = useState(1);
+  const [isSubmitting, setIsSubmitting] = useState(false);
   const totalSteps = 3;
   const { user, setIsOnboardingCompleted, fetchUser } = useAppContext();
   const [formData, setFormData] = useState({
@@ -79,6 +80,23 @@ const Onboarding = () => {
         ...formData,
         createdAt: new Date().toISOString(),
       };
+
+      localStorage.setItem("fitnessUser", JSON.stringify(userData));
+      setIsSubmitting(true);
+
+      try {
+        await mockApi.user.update(user?.id || "", userData);
+        await fetchUser(user?.token || "");
+        toast.success("Profile updated successfully");
+        setIsOnboardingCompleted(true);
+      } catch (error) {
+        toast.error(
+          error?.response?.data?.message ||
+            "Unable to save your profile. Please try again.",
+        );
+      } finally {
+        setIsSubmitting(false);
+      }
 
       localStorage.setItem("fitnessUser", JSON.stringify(userData));
       await mockApi.user.update(user?.id || "", userData);
@@ -274,7 +292,6 @@ const Onboarding = () => {
                     max={4000}
                     step={50}
                     value={formData.dailyCalorieIntake}
-                    
                   />
                   <Slider
                     onChange={(t) => {
@@ -287,7 +304,6 @@ const Onboarding = () => {
                     max={1500}
                     step={50}
                     value={formData.dailyCalorieBurn}
-                    
                   />
                 </div>
               </div>
@@ -308,9 +324,17 @@ const Onboarding = () => {
               </Button>
             )}
 
-            <Button className="w-full sm:w-auto" onClick={handleNext}>
+            <Button
+              className="w-full sm:w-auto"
+              onClick={handleNext}
+              disabled={isSubmitting}
+            >
               <span className="flex items-center justify-center gap-2">
-                {step === totalSteps ? "Get Started" : "Continue"}
+                {isSubmitting
+                  ? "Saving..."
+                  : step === totalSteps
+                    ? "Get Started"
+                    : "Continue"}
                 <ArrowRightIcon className="h-5 w-5" />
               </span>
             </Button>

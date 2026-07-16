@@ -28,17 +28,6 @@ export const AppProvider = ({ children }) => {
       const token = localStorage.getItem("token");
 
       if (!token) {
-        try {
-          const savedDb = localStorage.getItem("fitness_db");
-
-          if (savedDb) {
-            const parsedDb = JSON.parse(savedDb);
-            setAllFoodLogs(parsedDb.foodLogs || []);
-            setAllActivityLogs(parsedDb.activityLogs || []);
-          }
-        } catch (error) {
-          console.error("Failed to restore persisted logs", error);
-        }
         setIsUserFetched(true);
         return;
       }
@@ -47,10 +36,9 @@ export const AppProvider = ({ children }) => {
 
       try {
         const { data } = await mockApi.user.me();
-        const nextUser = { ...data, token };
 
-        setUser(nextUser);
-        setIsOnboardingCompleted(!shouldRequireOnboarding(nextUser));
+        setUser(data);
+        setIsOnboardingCompleted(!shouldRequireOnboarding(data));
         setIsUserFetched(true);
 
         const [{ data: foodData }, { data: activityData }] = await Promise.all([
@@ -99,10 +87,9 @@ export const AppProvider = ({ children }) => {
 
   const login = async (credentials) => {
     const { data } = await mockApi.auth.login(credentials);
-    const nextUser = { ...data.user, token: data.jwt };
 
-    setUser(nextUser);
-    setIsOnboardingCompleted(!shouldRequireOnboarding(nextUser));
+    setUser(data.user);
+    setIsOnboardingCompleted(!shouldRequireOnboarding(data.user));
     setIsUserFetched(true);
     localStorage.setItem("token", data.jwt);
 
@@ -115,12 +102,11 @@ export const AppProvider = ({ children }) => {
     setAllActivityLogs(activityData || []);
   };
 
-  const fetchUser = async (token) => {
+  const fetchUser = async () => {
     const { data } = await mockApi.user.me();
-    const nextUser = { ...data, token };
 
-    setUser(nextUser);
-    setIsOnboardingCompleted(!shouldRequireOnboarding(nextUser));
+    setUser(data);
+    setIsOnboardingCompleted(!shouldRequireOnboarding(data));
     setIsUserFetched(true);
 
     const [{ data: foodData }, { data: activityData }] = await Promise.all([

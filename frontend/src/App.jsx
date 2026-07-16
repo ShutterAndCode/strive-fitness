@@ -11,22 +11,18 @@ import Loading from './components/loading'
 import Onboarding from './pages/Onboarding'
 import { Toaster } from "react-hot-toast";
 
-const App = () => {
-  const { user, isUserFetched, isOnboardingCompleted } = useAppContext();
-  const profileIsComplete =
-    user?.age != null && user?.weight != null && Boolean(user?.goal);
+const { user, isUserFetched, isOnboardingCompleted } = useAppContext();
 
-  if (!isUserFetched) {
-    return <Loading />;
-  }
+if (!isUserFetched) {
+  return <Loading />;
+}
 
-  if (!user) {
-    return <Login />;
-  }
+if (!user) {
+  return <Login />;
+}
 
-  if (!isOnboardingCompleted || !profileIsComplete) {
-    return <Onboarding />;
-  }
+if (!isOnboardingCompleted) {
+  return <Onboarding />;
 
   return (
     <>

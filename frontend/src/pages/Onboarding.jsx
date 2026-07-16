@@ -81,12 +81,12 @@ const Onboarding = () => {
         createdAt: new Date().toISOString(),
       };
 
-      localStorage.setItem("fitnessUser", JSON.stringify(userData));
+      
       setIsSubmitting(true);
 
       try {
         await mockApi.user.update(user?.id || "", userData);
-        await fetchUser(user?.token || "");
+        await fetchUser();
         toast.success("Profile updated successfully");
         setIsOnboardingCompleted(true);
       } catch (error) {

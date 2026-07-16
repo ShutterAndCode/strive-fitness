@@ -17,8 +17,7 @@ const Dashboard = () => {
   const { user, allActivityLogs, allFoodLogs } = useAppContext();
 
   const DAILY_CALORIE_LIMIT = user?.dailyCalorieIntake || 2000;
-  const dailyBurnGoal =
-    user?.dailyCalorieBurn ?? user?.dailyCalorieBurned ?? 400;
+  const dailyBurnGoal = user?.dailyCalorieBurn ?? 400;
 
   const today = new Date().toISOString().split("T")[0];
   const normalizeDate = (value) => {

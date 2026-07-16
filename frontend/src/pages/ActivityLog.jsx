@@ -72,7 +72,11 @@ const ActivityLog = () => {
       toast.success("Entry deleted successfully!");
     } catch (error) {
       console.error(`could not delete:`, error);
-      toast.error(error?.message || "could not delete entry");
+      toast.error(
+        error?.response?.data?.message ||
+          error?.message ||
+          "could not delete entry",
+      );
     }
   };
 
@@ -99,8 +103,11 @@ const ActivityLog = () => {
       setFormData({ name: "", duration: 30, calories: 0 });
       setEditingEntry(null);
       setShowForm(false);
-    } catch {
-      setError("Unable to save activity. Please try again.");
+    } catch (error) {
+      setError(
+        error?.response?.data?.message ||
+          "Unable to save activity. Please try again.",
+      );
     } finally {
       setLoading(false);
     }

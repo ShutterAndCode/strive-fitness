@@ -40,10 +40,13 @@ const Profile = () => {
 
     try {
       const { data } = await mockApi.user.update(user.id, formData);
-      setUser({ ...data, token: user.token });
+      setUser(data);
       setEditing(false);
-    } catch {
-      setProfileError("Unable to update profile. Please try again.");
+    } catch (error) {
+      setProfileError(
+        error?.response?.data?.message ||
+          "Unable to update profile. Please try again.",
+      );
     } finally {
       setSaving(false);
     }

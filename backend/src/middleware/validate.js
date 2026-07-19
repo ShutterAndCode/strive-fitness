@@ -2,7 +2,7 @@ import ApiError from "../utils/ApiError.js";
 // factory to generate validation middlewares for each route
 const validate = (schema) => (req, res, next) => {
   const result = schema.safeParse({
-    body: req.body,
+    body: req.body||{},
     params: req.params,
     query: req.query,
   });

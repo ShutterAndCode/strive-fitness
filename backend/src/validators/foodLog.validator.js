@@ -3,13 +3,13 @@ import { z } from "zod";
 const mongoIdSchema = z
   .string()
   .regex(/^[0-9a-fA-F]{24}$/, "Invalid ID format");
-
+const mealTypes=["breakfast", "lunch", "snacks", "dinner"]
 export const createFoodLogSchema = z.object({
   body: z
     .object({
       foodName: z.string().min(1, `Food name is required`),
       calories: z.number().positive(`Calories must be a positive number`),
-      mealType: z.enum(["breakfast", "lunch", "snacks", "dinner"]),
+      mealType: z.enum(mealTypes),
       loggedAt: z.string().datetime().optional(),
     })
     .strict(),
@@ -21,7 +21,7 @@ export const updateFoodLogSchema = z.object({
     .object({
       foodName: z.string().min(1).optional(),
       calories: z.number().positive().optional(),
-      mealType: z.enum(["breakfast", "lunch", "snacks", "dinner"]).optional(),
+      mealType: z.enum(mealTypes).optional(),
       loggedAt: z.string().datetime().optional(),
     })
     .strict(),

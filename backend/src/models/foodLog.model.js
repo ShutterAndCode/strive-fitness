@@ -1,5 +1,5 @@
 import mongoose from "mongoose";
-
+const mealType=["breakfast", "lunch", "snacks", "dinner"]
 const foodLogSchema = new mongoose.Schema(
   {
     user: {

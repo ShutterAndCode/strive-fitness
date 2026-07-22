@@ -11,6 +11,9 @@ import testRoutes from "./routes/test.routes.js";
 import foodLogRoutes from './routes/foodLog.routes.js'
 import activityLogRoutes from './routes/activityLog.routes.js';
 import dashboardRoutes from "./routes/dashboard.routes.js";
+import foodSnapRoutes from './routes/foodSnap.routes.js'
+
+
 
 const app = express();
 app.use(helmet());
@@ -29,6 +32,9 @@ app.use("/api/users", userRoutes);
 app.use('/api/food-logs',foodLogRoutes)
 app.use('/api/activity-logs', activityLogRoutes);
 app.use('/api/dashboard',dashboardRoutes)
+app.use('/api/food-snap',foodSnapRoutes)
+
+
 app.use((req, res, next) => {
   next(new ApiError(404, `Route ${req.originalUrl} not found`));
 });

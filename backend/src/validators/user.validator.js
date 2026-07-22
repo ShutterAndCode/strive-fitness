@@ -7,6 +7,7 @@ export const updateProfileSchema = z.object({
         .string()
         .min(3, `Username must be at least 3 characters`)
         .optional(),
+        dailyCalorieGoal: z.number().positive(`Daily calorie goal must be a positive number`).optional()
     })
     .strict(),
   params: z.object({}),

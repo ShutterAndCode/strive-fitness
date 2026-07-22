@@ -29,7 +29,7 @@ const activityLogSchema = new mongoose.Schema(
   },
   { timestamps: true }
 );
-
+activityLogSchema.index({user:1,loggedAt:-1});
 const ActivityLog = mongoose.model('ActivityLog', activityLogSchema);
 
 export default ActivityLog;

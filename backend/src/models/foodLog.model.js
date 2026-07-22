@@ -29,5 +29,7 @@ const foodLogSchema = new mongoose.Schema(
   },
   { timestamps: true },
 );
+foodLogSchema.index({user:1,loggedAt:-1});
+
 const FoodLog = mongoose.model(`FoodLog`, foodLogSchema);
 export default FoodLog;

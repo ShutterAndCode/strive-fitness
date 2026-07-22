@@ -1,4 +1,4 @@
-import ActivityLog from '../models/activityLog.models.js';
+import ActivityLog from '../models/activityLog.model.js';
 import ApiError from '../utils/ApiError.js';
 
 export const createActivityLog = async (userId, data) => {

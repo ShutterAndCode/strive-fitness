@@ -16,7 +16,7 @@ import {
 
 const router = Router();
 
-router.use(protect);
+router.use(protect); // as all need authentication
 
 router.post('/', validate(createActivityLogSchema), createActivityLog);
 router.get('/', getActivityLogs);

@@ -21,11 +21,41 @@ const userSchema = new mongoose.Schema(
       required: true,
       select: false,
     },
-    dailyCalorieGoal:{
+    age: {
       type: Number,
-      default:2000,
-      min:0,
-    }
+      min: 13,
+      max: 120,
+    },
+
+    height: {
+      type: Number,
+      min: 50,
+    },
+
+    weight: {
+      type: Number,
+      min: 20,
+    },
+
+    goal: {
+      type: String,
+      enum: ["lose", "maintain", "gain"],
+    },
+
+    dailyCalorieIntake: {
+      type: Number,
+      default: 2000,
+    },
+
+    dailyCalorieBurn: {
+      type: Number,
+      default: 500,
+    },
+    dailyCalorieGoal: {
+      type: Number,
+      default: 2000,
+      min: 0,
+    },
   },
   { timestamps: true },
 );

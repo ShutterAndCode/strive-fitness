@@ -100,7 +100,7 @@ const user = {
   // id in the URL since /users/me always refers to the authenticated user.
   // The unused first argument is kept so existing call sites
   // (mockApi.user.update(user?.id || "", updates)) don't need to change yet.
-  update: (_id, updates) => api.patch("/users/me", updates),
+  update: (updates) => api.patch("/users/me", updates), // issue why onboaring was not being updated properlywith height weight etc
 };
 
 const foodLogs = {

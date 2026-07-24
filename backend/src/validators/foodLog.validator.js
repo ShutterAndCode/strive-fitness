@@ -3,7 +3,7 @@ import { z } from "zod";
 const mongoIdSchema = z
   .string()
   .regex(/^[0-9a-fA-F]{24}$/, "Invalid ID format");
-const mealTypes=["breakfast", "lunch", "snacks", "dinner"]
+const mealTypes=["breakfast", "lunch", "snack", "dinner"]
 export const createFoodLogSchema = z.object({
   body: z
     .object({

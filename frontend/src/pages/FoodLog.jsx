@@ -12,6 +12,7 @@ import {
 import Input from "../components/ui/Input";
 import { mealTypeOptions } from "../assets/assets";
 import mockApi from "../services/mockAPI";
+import api from "../services/api";
 import toast from "react-hot-toast";
 
 const FoodLog = () => {
@@ -21,7 +22,7 @@ const FoodLog = () => {
   const [showForm, setShowForm] = useState(false);
   const today = new Date().toISOString().split("T")[0];
   const [formData, setFormData] = useState({
-    name: "",
+    foodName: "",
     calories: 0,
     mealType: "",
   });
@@ -55,7 +56,7 @@ const FoodLog = () => {
 
   const handleQuickAdd = (activityName) => {
     setEditingEntry(null);
-    setFormData({ name: "", calories: 0, mealType: activityName });
+    setFormData({ foodName: "", calories: 0, mealType: activityName });
     setShowForm(true);
   };
   const handleImageChange = async (e) => {
@@ -67,7 +68,7 @@ const FoodLog = () => {
   const handleEdit = (entry) => {
     setEditingEntry(entry);
     setFormData({
-      name: entry.name || "",
+      foodName: entry.foodName || "",
       calories: entry.calories || 0,
       mealType: entry.mealType || "",
     });
@@ -80,9 +81,10 @@ const FoodLog = () => {
         "Are you sure you want to delete this entry?",
       );
       if (!confirm) return;
-      await mockApi.foodLogs.delete(documentId);
+      await api.foodLogs.delete(documentId);
+
       setAllFoodLogs((prev) =>
-        prev.filter((entry) => entry.documentId !== documentId),
+        prev.filter((entry) => entry._id !== documentId),
       );
       toast.success("Entry deleted successfully!");
     } catch (error) {
@@ -98,21 +100,19 @@ const FoodLog = () => {
 
     try {
       if (editingEntry) {
-        const { data } = await mockApi.foodLogs.update(
-          editingEntry.documentId,
-          formData,
-        );
+        const { data } = await api.foodLogs.update(editingEntry._id, formData);
+
         setAllFoodLogs((prev) =>
           prev.map((entry) =>
-            entry.documentId === editingEntry.documentId ? data : entry,
+            entry._id === editingEntry._id ? data.data : entry,
           ),
         );
       } else {
-        const { data } = await mockApi.foodLogs.create(formData);
-        setAllFoodLogs((prev) => [...prev, data]);
+        const { data } = await api.foodLogs.create(formData);
+        setAllFoodLogs((prev) => [...prev, data.data]);
       }
 
-      setFormData({ name: "", calories: 0, mealType: "" });
+      setFormData({ foodName: "", calories: 0, mealType: "" });
       setEditingEntry(null);
       setShowForm(false);
     } catch {
@@ -231,9 +231,9 @@ const FoodLog = () => {
                   placeholder="Arhar Dal"
                   type="text"
                   required
-                  value={formData.name}
+                  value={formData.foodName}
                   onChange={(v) => {
-                    setFormData({ ...formData, name: v.toString() });
+                    setFormData({ ...formData, foodName: v.toString() });
                   }}
                 />
                 <Input
@@ -269,7 +269,7 @@ const FoodLog = () => {
                     variant="secondary"
                     onClick={() => {
                       setShowForm(false);
-                      setFormData({ name: "", calories: 0, mealType: "" });
+                      setFormData({ foodName: "", calories: 0, mealType: "" });
                     }}
                   >
                     Cancel
@@ -320,12 +320,12 @@ const FoodLog = () => {
                       <div className="space-y-2">
                         {mealEntries.map((entry) => (
                           <div
-                            key={entry.documentId || entry.id}
+                            key={entry._id}
                             className="rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3 dark:border-slate-800 dark:bg-slate-900"
                           >
                             <div className="flex items-center justify-between">
                               <p className="font-medium text-slate-800 dark:text-slate-100">
-                                {entry.name}
+                                {entry.foodName}
                               </p>
                               <p className="text-sm text-slate-500 dark:text-slate-400">
                                 {entry.calories} kcal
@@ -347,7 +347,7 @@ const FoodLog = () => {
                                 type="button"
                                 variant="destructive"
                                 className="flex-1 text-red-800 bg-red-300"
-                                onClick={() => handleDelete(entry.documentId)}
+                                onClick={() => handleDelete(entry._id)}
                               >
                                 Delete
                               </Button>

@@ -6,38 +6,39 @@ import FoodLog from "./pages/FoodLog";
 import ActivityLog from "./pages/ActivityLog";
 import Profile from "./pages/Profile";
 import { useAppContext } from "./context/useAppContext";
-import Login from './pages/Login'
-import Loading from './components/loading'
-import Onboarding from './pages/Onboarding'
+import Login from "./pages/Login";
+import Loading from "./components/loading";
+import Onboarding from "./pages/Onboarding";
 import { Toaster } from "react-hot-toast";
 
-const { user, isUserFetched, isOnboardingCompleted } = useAppContext();
+function App() {
+  const { user, isUserFetched, isOnboardingCompleted } = useAppContext();
 
-if (!isUserFetched) {
-  return <Loading />;
-}
+  if (!isUserFetched) {
+    return <Loading />;
+  }
 
-if (!user) {
-  return <Login />;
-}
+  if (!user) {
+    return <Login />;
+  }
 
-if (!isOnboardingCompleted) {
-  return <Onboarding />;
+  if (!isOnboardingCompleted) {
+    return <Onboarding />;
+  }
 
   return (
     <>
-    
-    <Toaster />
+      <Toaster />
       <Routes>
         <Route path="/" element={<Layout />}>
           <Route index element={<Dashboard />} />
-          <Route path="food" element={<FoodLog />}></Route>
-          <Route path="activity" element={<ActivityLog />}></Route>
-          <Route path="profile" element={<Profile />}></Route>
+          <Route path="food" element={<FoodLog />} />
+          <Route path="activity" element={<ActivityLog />} />
+          <Route path="profile" element={<Profile />} />
         </Route>
       </Routes>
     </>
   );
-};
+}
 
 export default App;

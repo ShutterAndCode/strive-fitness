@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import mockApi from "../services/mockAPI";
+import api from "../services/api";
 import AppContext from "./appContext";
 import toast from "react-hot-toast";
 
@@ -25,6 +26,7 @@ export const AppProvider = ({ children }) => {
 
   useEffect(() => {
     const restoreSession = async () => {
+      console.log("restoreSession running");
       const token = localStorage.getItem("token");
 
       if (!token) {
@@ -35,18 +37,19 @@ export const AppProvider = ({ children }) => {
       setIsUserFetched(false);
 
       try {
-        const { data } = await mockApi.user.me();
+        const { data } = await api.user.me();
+        const currentUser = data.data;
 
-        setUser(data);
-        setIsOnboardingCompleted(!shouldRequireOnboarding(data));
+        setUser(currentUser);
+        setIsOnboardingCompleted(!shouldRequireOnboarding(currentUser));
         setIsUserFetched(true);
 
         const [{ data: foodData }, { data: activityData }] = await Promise.all([
-          mockApi.foodLogs.list(),
+          api.foodLogs.list(),
           mockApi.activityLogs.list(),
         ]);
 
-        setAllFoodLogs(foodData || []);
+        setAllFoodLogs(foodData.data || []);
         setAllActivityLogs(activityData || []);
       } catch (error) {
         console.error("Failed to restore session", error);
@@ -74,53 +77,55 @@ export const AppProvider = ({ children }) => {
   }, [navigate]);
 
   const signup = async (credentials) => {
-    const { data } = await mockApi.auth.register(credentials);
-    const nextUser = data.user;
+    const { data } = await api.auth.register(credentials);
+    const { user: newUser, token } = data.data;
 
-    setUser(nextUser);
+    setUser(newUser);
     setIsOnboardingCompleted(false);
     setIsUserFetched(true);
     setAllFoodLogs([]);
     setAllActivityLogs([]);
-    localStorage.setItem("token", data.jwt);
+    localStorage.setItem("token", token);
   };
 
   const login = async (credentials) => {
-    const { data } = await mockApi.auth.login(credentials);
+    const { data } = await api.auth.login(credentials);
+    const { user: loggedInUser, token } = data.data; //destructing nor better naming
 
-    setUser(data.user);
-    setIsOnboardingCompleted(!shouldRequireOnboarding(data.user));
+    setUser(loggedInUser);
+    setIsOnboardingCompleted(!shouldRequireOnboarding(loggedInUser));
     setIsUserFetched(true);
-    localStorage.setItem("token", data.jwt);
+    localStorage.setItem("token", token);
 
     const [{ data: foodData }, { data: activityData }] = await Promise.all([
-      mockApi.foodLogs.list(),
+      api.foodLogs.list(),
       mockApi.activityLogs.list(),
     ]);
 
-    setAllFoodLogs(foodData || []);
+    setAllFoodLogs(foodData.data || []);
     setAllActivityLogs(activityData || []);
   };
 
   const fetchUser = async () => {
-    const { data } = await mockApi.user.me();
+    const { data } = await api.user.me();
 
-    setUser(data);
-    setIsOnboardingCompleted(!shouldRequireOnboarding(data));
+    const currentUser = data.data;
+
+    setUser(currentUser);
+    setIsOnboardingCompleted(!shouldRequireOnboarding(currentUser));
     setIsUserFetched(true);
 
     const [{ data: foodData }, { data: activityData }] = await Promise.all([
-      mockApi.foodLogs.list(),
+      api.foodLogs.list(),
       mockApi.activityLogs.list(),
     ]);
 
-    setAllFoodLogs(foodData || []);
-    setAllActivityLogs(activityData || []);
+    setAllFoodLogs(foodData.data || []);
   };
 
   const fetchFoodLogs = async () => {
-    const { data } = await mockApi.foodLogs.list();
-    setAllFoodLogs(data);
+    const { data } = await api.foodLogs.list();
+    setAllFoodLogs(data.data);
   };
 
   const fetchActivityLogs = async () => {

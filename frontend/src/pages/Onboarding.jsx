@@ -13,10 +13,11 @@ import Input from "../components/ui/Input";
 import Button from "../components/ui/Button";
 import Slider from "../components/ui/Slider";
 import toast, { Toaster } from "react-hot-toast";
+
 import mockApi from "../services/mockAPI";
 import { ageRanges, goalOptions } from "../assets/assets";
 import ThemeToggle from "../components/ThemeToggle";
-
+import api from "../services/api";
 const Onboarding = () => {
   const [step, setStep] = useState(1);
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -78,14 +79,13 @@ const Onboarding = () => {
     } else {
       const userData = {
         ...formData,
-        createdAt: new Date().toISOString(),
+        // createdAt: new Date().toISOString(),
       };
 
-      
       setIsSubmitting(true);
 
       try {
-        await mockApi.user.update(user?.id || "", userData);
+        await api.user.update(userData);
         await fetchUser();
         toast.success("Profile updated successfully");
         setIsOnboardingCompleted(true);
@@ -98,11 +98,11 @@ const Onboarding = () => {
         setIsSubmitting(false);
       }
 
-      localStorage.setItem("fitnessUser", JSON.stringify(userData));
-      await mockApi.user.update(user?.id || "", userData);
-      toast.success("Profile updated successfully");
-      setIsOnboardingCompleted(true);
-      fetchUser(user?.token || "");
+      // localStorage.setItem("fitnessUser", JSON.stringify(userData));
+      // await mockApi.user.update(user?.id || "", userData);
+      // toast.success("Profile updated successfully");
+      // setIsOnboardingCompleted(true);
+      // fetchUser(user?.token || "");
     }
   };
   return (

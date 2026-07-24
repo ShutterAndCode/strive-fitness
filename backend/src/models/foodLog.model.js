@@ -1,5 +1,5 @@
 import mongoose from "mongoose";
-const mealType=["breakfast", "lunch", "snacks", "dinner"]
+const mealType=["breakfast", "lunch", "snack", "dinner"]
 const foodLogSchema = new mongoose.Schema(
   {
     user: {
@@ -19,7 +19,7 @@ const foodLogSchema = new mongoose.Schema(
     },
     mealType: {
       type: String,
-      enum: ["breakfast", "lunch", "snacks", "dinner"],
+      enum: mealType,
       required: true,
     },
     loggedAt: {

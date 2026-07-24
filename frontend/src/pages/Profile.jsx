@@ -7,6 +7,7 @@ import {
   ArrowRightCircleIcon,
 } from "lucide-react";
 import Card from "../components/ui/Card";
+import api from "../services/api";
 import Input from "../components/ui/Input";
 import ThemeToggle from "../components/ThemeToggle";
 import mockApi from "../services/mockAPI";
@@ -33,14 +34,18 @@ const Profile = () => {
   const memberSince = user?.createdAt
     ? new Date(user.createdAt).toLocaleDateString()
     : "-";
-
   const handleSaveProfile = async () => {
     setSaving(true);
     setProfileError("");
 
     try {
-      const { data } = await mockApi.user.update(user.id, formData);
-      setUser(data);
+      const { data } = await api.user.update(user?._id || user?.id, formData); //why user.id?? 
+      //Keeping this argument makes the call compatible with the existing signature, and it will continue to work whether your context stores _id or id.
+      
+
+      const updatedUser = data.data;
+
+      setUser(updatedUser);
       setEditing(false);
     } catch (error) {
       setProfileError(

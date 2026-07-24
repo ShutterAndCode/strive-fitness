@@ -61,7 +61,8 @@ api.interceptors.response.use(
     // to begin with, so there's no session to tear down. That case should
     // just be shown inline on the Login form (a separate, later fix).
     const isAuthEndpoint =
-      requestUrl.includes("/auth/login") || requestUrl.includes("/auth/register");
+      requestUrl.includes("/auth/login") ||
+      requestUrl.includes("/auth/register");
 
     if (status === 401 && !isAuthEndpoint) {
       localStorage.removeItem("token");
@@ -112,7 +113,8 @@ const foodLogs = {
 
   // ActivityLog.jsx/FoodLog.jsx currently call update(documentId, updates)
   // with a flat object — send it straight through as the request body.
-  update: (documentId, updates) => api.patch(`/food-logs/${documentId}`, updates),
+  update: (documentId, updates) =>
+    api.patch(`/food-logs/${documentId}`, updates),
 
   delete: (documentId) => api.delete(`/food-logs/${documentId}`),
 };
@@ -124,7 +126,14 @@ const activityLogs = {
     api.patch(`/activity-logs/${documentId}`, updates),
   delete: (documentId) => api.delete(`/activity-logs/${documentId}`),
 };
-
+const foodSnap = {
+  analyze: (formData) =>
+    api.post("/food-snap", formData, {
+      headers: {
+        "Content-Type": "multipart/form-data",
+      },
+    }),
+};
 // Named export in case a file ever needs the raw configured instance
 // directly (e.g. for a one-off multipart upload request for AI Food Snap).
 export { api };
@@ -132,5 +141,4 @@ export { api };
 // Default export mirrors mockAPI.js's default export shape:
 // { auth, user, foodLogs, activityLogs } — so a page's only required change,
 // when the time comes, is the import path itself.
-export default { auth, user, foodLogs, activityLogs };
-
+export default { auth, user, foodLogs, activityLogs, foodSnap };

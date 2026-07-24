@@ -1,16 +1,24 @@
-import mongoose from 'mongoose';
-const activityTypes = ['running', 'cycling', 'swimming', 'strength', 'yoga', 'walking', 'other'];
+import mongoose from "mongoose";
+const activityTypes = [
+  "running",
+  "cycling",
+  "swimming",
+  "strength",
+  "yoga",
+  "walking",
+  "other",
+];
 const activityLogSchema = new mongoose.Schema(
   {
     user: {
       type: mongoose.Schema.Types.ObjectId,
-      ref: 'User',
+      ref: "User",
       required: true,
     },
     activityType: {
       type: String,
-      enum: ['running', 'cycling', 'swimming', 'strength', 'yoga', 'walking', 'other'],
       required: true,
+      trim: true,
     },
     durationMinutes: {
       type: Number,
@@ -27,9 +35,9 @@ const activityLogSchema = new mongoose.Schema(
       default: Date.now,
     },
   },
-  { timestamps: true }
+  { timestamps: true },
 );
-activityLogSchema.index({user:1,loggedAt:-1});
-const ActivityLog = mongoose.model('ActivityLog', activityLogSchema);
+activityLogSchema.index({ user: 1, loggedAt: -1 });
+const ActivityLog = mongoose.model("ActivityLog", activityLogSchema);
 
 export default ActivityLog;

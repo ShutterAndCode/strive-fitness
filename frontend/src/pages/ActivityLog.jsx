@@ -5,6 +5,7 @@ import Button from "../components/ui/Button";
 import Input from "../components/ui/Input";
 import { PlusIcon, SparkleIcon, UtensilsCrossedIcon } from "lucide-react";
 import mockApi from "../services/mockAPI";
+import api from "../services/api";
 import toast from "react-hot-toast";
 
 const ActivityLog = () => {
@@ -12,9 +13,9 @@ const ActivityLog = () => {
   const [loading, setLoading] = useState(false);
   const [showForm, setShowForm] = useState(false);
   const [formData, setFormData] = useState({
-    name: "",
-    duration: 30,
-    calories: 0,
+    activityType: "",
+    durationMinutes: 30,
+    caloriesBurned: 0,
   });
   const [editingEntry, setEditingEntry] = useState(null);
   const [error, setError] = useState("");
@@ -35,16 +36,16 @@ const ActivityLog = () => {
   );
 
   const totalMinutes = todayActivities.reduce(
-    (sum, item) => sum + (item.duration || 0),
+    (sum, item) => sum + (item.durationMinutes || 0),
     0,
   );
 
   const handleQuickAdd = (activityName) => {
     setEditingEntry(null);
     setFormData({
-      name: activityName,
-      duration: 30,
-      calories: 0,
+      activityType: activityName,
+      durationMinutes: 30,
+      caloriesBurned: 0,
     });
     setShowForm(true);
   };
@@ -52,9 +53,9 @@ const ActivityLog = () => {
   const handleEdit = (entry) => {
     setEditingEntry(entry);
     setFormData({
-      name: entry.name || "",
-      duration: entry.duration || 30,
-      calories: entry.calories || 0,
+      activityType: entry.activityType || "",
+      durationMinutes: entry.durationMinutes || 30,
+      caloriesBurned: entry.caloriesBurned || 0,
     });
     setShowForm(true);
   };
@@ -65,9 +66,10 @@ const ActivityLog = () => {
         "Are you sure you want to delete this entry?",
       );
       if (!confirm) return;
-      await mockApi.activityLogs.delete(documentId);
+      await api.activityLogs.delete(documentId);
+
       setAllActivityLogs((prev) =>
-        prev.filter((entry) => entry.documentId !== documentId),
+        prev.filter((entry) => entry._id !== documentId),
       );
       toast.success("Entry deleted successfully!");
     } catch (error) {
@@ -87,20 +89,21 @@ const ActivityLog = () => {
 
     try {
       if (editingEntry) {
-        const { data } = await mockApi.activityLogs.update(
-          editingEntry.documentId,
+        const { data } = await api.activityLogs.update(
+          editingEntry._id,
           formData,
         );
+
         setAllActivityLogs((prev) =>
           prev.map((entry) =>
-            entry.documentId === editingEntry.documentId ? data : entry,
+            entry._id === editingEntry._id ? data.data : entry,
           ),
         );
       } else {
-        const { data } = await mockApi.activityLogs.create(formData);
-        setAllActivityLogs((prev) => [...prev, data]);
+        const { data } = await api.activityLogs.create(formData);
+        setAllActivityLogs((prev) => [...prev, data.data]);
       }
-      setFormData({ name: "", duration: 30, calories: 0 });
+      setFormData({ activityType: "", durationMinutes: 30, caloriesBurned: 0 });
       setEditingEntry(null);
       setShowForm(false);
     } catch (error) {
@@ -147,25 +150,25 @@ const ActivityLog = () => {
                 </h3>
                 <div className="grid grid-cols-2 gap-3">
                   <button
-                    onClick={() => handleQuickAdd("Morning Run")}
+                    onClick={() => handleQuickAdd("running")}
                     className="rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm font-medium text-slate-700 transition hover:border-emerald-300 hover:bg-emerald-50 dark:border-slate-800 dark:bg-slate-900 dark:text-slate-100 dark:hover:bg-slate-800"
                   >
                     🏃 Morning Run
                   </button>
                   <button
-                    onClick={() => handleQuickAdd("Cycling")}
+                    onClick={() => handleQuickAdd("cycling")}
                     className="rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm font-medium text-slate-700 transition hover:border-amber-300 hover:bg-amber-50 dark:border-slate-800 dark:bg-slate-900 dark:text-slate-100 dark:hover:bg-slate-800"
                   >
                     🚴 Cycling
                   </button>
                   <button
-                    onClick={() => handleQuickAdd("Yoga")}
+                    onClick={() => handleQuickAdd("yoga")}
                     className="rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm font-medium text-slate-700 transition hover:border-pink-300 hover:bg-pink-50 dark:border-slate-800 dark:bg-slate-900 dark:text-slate-100 dark:hover:bg-slate-800"
                   >
                     🧘 Yoga
                   </button>
                   <button
-                    onClick={() => handleQuickAdd("Walking")}
+                    onClick={() => handleQuickAdd("walking")}
                     className="rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm font-medium text-slate-700 transition hover:border-indigo-300 hover:bg-indigo-50 dark:border-slate-800 dark:bg-slate-900 dark:text-slate-100 dark:hover:bg-slate-800"
                   >
                     🚶 Walking
@@ -180,7 +183,11 @@ const ActivityLog = () => {
               <Button
                 className="w-full"
                 onClick={() => {
-                  setFormData({ name: "", duration: 30, calories: 0 });
+                  setFormData({
+                    activityType: "",
+                    durationMinutes: 30,
+                    caloriesBurned: 0,
+                  });
                   setShowForm(true);
                 }}
               >
@@ -201,9 +208,9 @@ const ActivityLog = () => {
                   placeholder="e.g. Morning Run"
                   type="text"
                   required
-                  value={formData.name}
+                  value={formData.activityType}
                   onChange={(value) =>
-                    setFormData({ ...formData, name: value.toString() })
+                    setFormData({ ...formData,   activityType: value.toString() })
                   }
                 />
                 <Input
@@ -212,9 +219,9 @@ const ActivityLog = () => {
                   type="number"
                   min={1}
                   required
-                  value={formData.duration}
+                  value={formData.durationMinutes}
                   onChange={(value) =>
-                    setFormData({ ...formData, duration: Number(value) })
+                    setFormData({ ...formData, durationMinutes: Number(value) })
                   }
                 />
                 <Input
@@ -223,9 +230,9 @@ const ActivityLog = () => {
                   type="number"
                   min={0}
                   required
-                  value={formData.calories}
+                  value={formData.caloriesBurned}
                   onChange={(value) =>
-                    setFormData({ ...formData, calories: Number(value) })
+                    setFormData({ ...formData, caloriesBurned: Number(value) })
                   }
                 />
                 {error && (
@@ -241,7 +248,11 @@ const ActivityLog = () => {
                     onClick={() => {
                       setShowForm(false);
                       setEditingEntry(null);
-                      setFormData({ name: "", duration: 30, calories: 0 });
+                      setFormData({
+                        activityType: "",
+                        durationMinutes: 30,
+                        caloriesBurned: 0,
+                      });
                     }}
                   >
                     Cancel
@@ -274,20 +285,21 @@ const ActivityLog = () => {
             ) : (
               todayActivities.map((entry) => (
                 <Card
-                  key={entry.documentId || entry.id}
+                  key={entry._id}
                   className="rounded-2xl border border-slate-200 bg-slate-50 p-4 dark:border-slate-800 dark:bg-slate-900"
                 >
                   <div className="flex items-center justify-between">
                     <div>
-                      <p className="font-medium text-slate-800 dark:text-slate-100">
-                        {entry.name}
+                      <p className="font-medium capitalize text-slate-800 dark:text-slate-100">
+                        {entry.activityType}
                       </p>
                       <p className="text-sm text-slate-500 dark:text-slate-400">
-                        {entry.duration} minutes • {entry.calories} kcal
+                        {entry.durationMinutes} minutes • {entry.caloriesBurned}{" "}
+                        kcal
                       </p>
                     </div>
                     <div className="inline-flex items-center rounded-full bg-blue-100 px-3 py-1 text-sm font-medium text-blue-700 dark:bg-blue-900 dark:text-blue-200">
-                      {entry.duration} min
+                      {entry.durationMinutes} min
                     </div>
                   </div>
                   <div className="mt-3 flex gap-2">
@@ -303,7 +315,7 @@ const ActivityLog = () => {
                       type="button"
                       variant="destructive"
                       className="flex-1 text-red-800 bg-red-300"
-                      onClick={() => handleDelete(entry.documentId)}
+                      onClick={() => handleDelete(entry._id)}
                     >
                       Delete
                     </Button>

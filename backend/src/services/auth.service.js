@@ -23,12 +23,11 @@ export const registerUser = async ({ username, email, password }) => {
   });
 
   const token = generateToken(user._id);
+  const userObject = user.toObject();
+  delete userObject.password;
+
   return {
-    user: {
-      id: user._id,
-      username: user.username,
-      email: user.email,
-    },
+    user: userObject,
     token,
   };
 };
@@ -45,12 +44,11 @@ export const loginUser = async ({ email, password }) => {
 
   const token = generateToken(user._id);
 
+  const userObject = user.toObject();
+  delete userObject.password;
+
   return {
-    user: {
-      id: user._id,
-      username: user.username,
-      email: user.email,
-    },
+    user: userObject,
     token,
   };
 };

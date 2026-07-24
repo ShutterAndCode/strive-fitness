@@ -1,4 +1,4 @@
-import { Route, Routes } from "react-router-dom";
+import { Navigate, Route, Routes } from "react-router-dom";
 
 import Layout from "./pages/Layout";
 import Dashboard from "./pages/Dashboard";
@@ -18,24 +18,48 @@ function App() {
     return <Loading />;
   }
 
-  if (!user) {
-    return <Login />;
-  }
-
-  if (!isOnboardingCompleted) {
-    return <Onboarding />;
-  }
-
   return (
     <>
       <Toaster />
+
       <Routes>
-        <Route path="/" element={<Layout />}>
+        <Route
+          path="/login"
+          element={user ? <Navigate to="/" replace /> : <Login />}
+        />
+
+        <Route
+          path="/onboarding"
+          element={
+            !user ? (
+              <Navigate to="/login" replace />
+            ) : isOnboardingCompleted ? (
+              <Navigate to="/" replace />
+            ) : (
+              <Onboarding />
+            )
+          }
+        />
+
+        <Route
+          path="/"
+          element={
+            !user ? (
+              <Navigate to="/login" replace />
+            ) : !isOnboardingCompleted ? (
+              <Navigate to="/onboarding" replace />
+            ) : (
+              <Layout />
+            )
+          }
+        >
           <Route index element={<Dashboard />} />
           <Route path="food" element={<FoodLog />} />
           <Route path="activity" element={<ActivityLog />} />
           <Route path="profile" element={<Profile />} />
         </Route>
+
+        <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>
     </>
   );

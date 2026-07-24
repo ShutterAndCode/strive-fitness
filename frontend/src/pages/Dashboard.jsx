@@ -38,13 +38,13 @@ const Dashboard = () => {
     0,
   );
   const totalActiveMinutes = todayActivity.reduce(
-    (sum, item) => sum + (item.duration || 0),
-    0,
-  );
+  (sum, item) => sum + (item.durationMinutes || 0),
+  0,
+);
   const totalBurned = todayActivity.reduce(
-    (sum, item) => sum + (item.calories || 0),
-    0,
-  );
+  (sum, item) => sum + (item.caloriesBurned || 0),
+  0,
+);
   const motivation = getMotivationalMessage(
     totalCalories,
     totalActiveMinutes,

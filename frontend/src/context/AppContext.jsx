@@ -6,7 +6,10 @@ import AppContext from "./appContext";
 import toast from "react-hot-toast";
 
 const hasRequiredProfile = (profile) =>
-  profile?.age != null && profile?.weight != null && Boolean(profile?.goal);
+  profile?.age != null &&
+  profile?.height != null &&
+  profile?.weight != null &&
+  Boolean(profile?.goal);
 
 const shouldRequireOnboarding = (profile) => {
   if (!profile) {
@@ -46,11 +49,11 @@ export const AppProvider = ({ children }) => {
 
         const [{ data: foodData }, { data: activityData }] = await Promise.all([
           api.foodLogs.list(),
-          mockApi.activityLogs.list(),
+          api.activityLogs.list(),
         ]);
 
         setAllFoodLogs(foodData.data || []);
-        setAllActivityLogs(activityData || []);
+        setAllActivityLogs(activityData.data || []);
       } catch (error) {
         console.error("Failed to restore session", error);
         localStorage.removeItem("token");
@@ -67,7 +70,7 @@ export const AppProvider = ({ children }) => {
       setUser(null);
       setIsOnboardingCompleted(false);
       setIsUserFetched(true);
-      navigate("/");
+      navigate("/", { replace: true });
     };
 
     window.addEventListener("auth:unauthorized", handleUnauthorized);
@@ -99,11 +102,11 @@ export const AppProvider = ({ children }) => {
 
     const [{ data: foodData }, { data: activityData }] = await Promise.all([
       api.foodLogs.list(),
-      mockApi.activityLogs.list(),
+      api.activityLogs.list(),
     ]);
 
     setAllFoodLogs(foodData.data || []);
-    setAllActivityLogs(activityData || []);
+    setAllActivityLogs(activityData.data || []);
   };
 
   const fetchUser = async () => {
@@ -117,10 +120,11 @@ export const AppProvider = ({ children }) => {
 
     const [{ data: foodData }, { data: activityData }] = await Promise.all([
       api.foodLogs.list(),
-      mockApi.activityLogs.list(),
+      api.activityLogs.list(),
     ]);
 
     setAllFoodLogs(foodData.data || []);
+    setAllActivityLogs(activityData.data || []);
   };
 
   const fetchFoodLogs = async () => {
@@ -129,10 +133,9 @@ export const AppProvider = ({ children }) => {
   };
 
   const fetchActivityLogs = async () => {
-    const { data } = await mockApi.activityLogs.list();
-    setAllActivityLogs(data);
+    const { data } = await api.activityLogs.list();
+    setAllActivityLogs(data.data);
   };
-
   const logout = async () => {
     try {
       const confirm = window.confirm("Are you sure you want to log out?");
@@ -144,7 +147,7 @@ export const AppProvider = ({ children }) => {
       setIsOnboardingCompleted(false);
       setIsUserFetched(true);
 
-      navigate("/");
+      navigate("/", { replace: true });
       toast.success("Logged out successfully");
     } catch (error) {
       console.error(error);

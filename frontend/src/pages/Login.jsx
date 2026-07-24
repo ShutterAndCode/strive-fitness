@@ -41,7 +41,7 @@ const Login = () => {
 
   useEffect(() => {
     if (user) {
-      navigate("/");
+      navigate("/", { replace: true });
     }
   }, [user, navigate]);
   return (
@@ -53,11 +53,11 @@ const Login = () => {
         </div>
         <form className="login-form" onSubmit={handleSubmit}>
           <h2 className="text-3xl font-medium text-gray-900 dark:text-white">
-            {loginState === "login" ? "Sign In" : "Sign Up"}
+            {loginState === "login" ? "Log In" : "Sign Up"}
           </h2>
           <p className="text-sm mt-2 text-gray-600/90 dark:text-gray-400">
             {loginState === "login"
-              ? "Please enter your details to Login"
+              ? "Please enter your details to login"
               : "Please create an Account"}
           </p>
           {/* userName */}

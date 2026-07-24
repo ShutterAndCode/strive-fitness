@@ -40,8 +40,15 @@ const CaloriesChart = () => {
         (log) => normalizeDate(log.createdAt || log.date) === dateString,
       );
 
-      const intake = dailyFood.reduce((sum, item) => sum + (item.calories || 0), 0);
-      const burn = dailyActivity.reduce((sum, item) => sum + (item.calories || 0), 0);
+      const intake = dailyFood.reduce(
+        (sum, item) => sum + (item.calories || 0),
+        0,
+      );
+
+      const burn = dailyActivity.reduce(
+        (sum, item) => sum + (item.caloriesBurned || 0),
+        0,
+      );
 
       data.push({
         name: dayName,
@@ -95,10 +102,7 @@ const CaloriesChart = () => {
             }}
           />
 
-          <Legend
-            iconType="circle"
-            wrapperStyle={{ paddingTop: "10px" }}
-          />
+          <Legend iconType="circle" wrapperStyle={{ paddingTop: "10px" }} />
 
           <Bar
             dataKey="Intake"

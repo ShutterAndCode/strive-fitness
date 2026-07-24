@@ -1,10 +1,10 @@
-export default function ProgressBar({
-  value,
-  max = 100,
-  className = "",
-}) {
-  const percentage = Math.min(Math.round((value / max) * 100), 100);
-  const isOverLimit = value > max;
+export default function ProgressBar({ value = 0, max = 100, className = "" }) {
+  const safeValue = Number(value) || 0;
+  const safeMax = Number(max) || 100;
+
+  const percentage = Math.min(Math.round((safeValue / safeMax) * 100), 100);
+
+  const isOverLimit = safeValue > safeMax;
 
   return (
     <div className={`space-y-2 ${className}`}>

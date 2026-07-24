@@ -19,6 +19,7 @@ const FoodLog = () => {
   const [loading, setLoading] = useState(false);
   const inputRef = useRef(null);
   const { allFoodLogs, setAllFoodLogs } = useAppContext();
+  const [aiResult, setAiResult] = useState(null);
   const [showForm, setShowForm] = useState(false);
   const today = new Date().toISOString().split("T")[0];
   const [formData, setFormData] = useState({
@@ -61,8 +62,43 @@ const FoodLog = () => {
   };
   const handleImageChange = async (e) => {
     const file = e.target.files?.[0];
+
     if (!file) return;
-    //implement ai logic
+
+    const formData = new FormData();
+    formData.append("image", file);
+
+    setLoading(true);
+    setError("");
+
+    try {
+      const { data } = await api.foodSnap.analyze(formData);
+
+      const result = data.data;
+
+      setAiResult(result);
+
+      setFormData({
+        foodName: result.foodName || "",
+        calories: result.estimatedCalories || 0,
+        mealType: "",
+      });
+
+      setShowForm(true);
+
+      toast.success("Food analyzed successfully!");
+    } catch (error) {
+      console.error("AI Snap failed:", error);
+
+      toast.error(
+        error?.response?.data?.message || "Could not analyze food image",
+      );
+    } finally {
+      setLoading(false);
+
+      // allows selecting the same image again
+      e.target.value = "";
+    }
   };
 
   const handleEdit = (entry) => {
